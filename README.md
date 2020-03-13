@@ -1,2 +1,2 @@
-# codex-backend
-Go/GraphQL backend for the Codex web app
+# codex-server
+Go/GraphQL backend server for the Codex web app
