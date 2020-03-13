@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -11,9 +12,14 @@ import (
 	firebase "firebase.google.com/go"
 	"firebase.google.com/go/auth"
 	"google.golang.org/api/option"
+
+	_ "github.com/GoogleCloudPlatform/cloudsql-proxy/proxy/dialers/postgres"
+	_ "github.com/lib/pq"
 )
 
 var (
+	db *sql.DB
+
 	app    *firebase.App
 	client *auth.Client
 )
@@ -49,9 +55,21 @@ func handler(w http.ResponseWriter, r *http.Request) {
 // }
 
 func main() {
+	// Connect to Cloud SQL:
+	log.Print("connecting to Cloud SQL")
+	var err error
+	db, err = sql.Open("cloudsqlpostgres", fmt.Sprintf(`
+		host=codex-ef322:us-west1:codex-db
+		user=postgres
+		password=%s
+		dbname=codex
+		sslmode=disable
+	`, os.Getenv("CLOUD_SQL_PASSWORD")))
+	must(err, "error due to sql.Open")
+	defer db.Close()
+
 	// Setup Firebase (1 of 2):
-	//
-	// https://firebase.google.com/docs/admin/setup
+	log.Print("setting up Firebase Admin")
 	var err error
 	opt := option.WithCredentialsFile(".secret/firebase-admin-sdk.json")
 	app, err = firebase.NewApp(context.TODO(), nil, opt)
@@ -59,12 +77,84 @@ func main() {
 	// Setup Firebase (2 of 2):
 	client, err = app.Auth(context.TODO())
 	must(err, "error due to app.Auth")
+
 	// Listen and serve:
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
 	}
+	log.Printf("serving on port %s", port)
 	http.HandleFunc("/", handler)
-	err = http.ListenAndServe(":"+port, nil)
+	err = http.ListenAndServe(fmt.Sprintf(":%s", port), nil)
 	log.Fatal(err)
 }
+
+// // Postgres database:
+// var DB *sql.DB
+//
+// // GraphQL schema:
+// var Schema *graphql.Schema
+//
+// type Query struct {
+// 	Query     string
+// 	Variables map[string]interface{}
+// }
+//
+// func handleGraphQL(w http.ResponseWriter, r *http.Request) {
+// 	// Enable cross-origin resource sharing:
+// 	writeCORSHeaders(w)
+// 	if r.Method == "OPTIONS" {
+// 		w.WriteHeader(http.StatusOK)
+// 		return
+// 	}
+// 	// Extend the current session if authenticated:
+// 	curr, err := ExtendCurrentSession(w, r)
+// 	if err != nil {
+// 		http.Error(w, "500 Server Error", http.StatusInternalServerError)
+// 		check(err, "ExtendCurrentSession")
+// 		return
+// 	}
+// 	// Create a context with the current session as a value:
+// 	ctx := WithCurrentSession(context.Background(), curr)
+// 	// Unmarshal query and variables:
+// 	var query Query
+// 	err = json.NewDecoder(r.Body).Decode(&query)
+// 	if err != nil {
+// 		http.Error(w, "500 Server Error", http.StatusInternalServerError)
+// 		check(err, "json.NewDecoder")
+// 		return
+// 	}
+// 	// Execute query and marshal response and errors:
+// 	res := Schema.Exec(ctx, query.Query, "", query.Variables)
+// 	b, err := json.MarshalIndent(res, "", "\t")
+// 	if err != nil {
+// 		http.Error(w, "500 Server Error", http.StatusInternalServerError)
+// 		check(err, "json.MarshalIndent")
+// 		return
+// 	}
+// 	// Write response:
+// 	fmt.Fprintln(w, string(b))
+// }
+//
+// func main() {
+// 	// Connect to the database:
+// 	var err error
+// 	DB, err = sql.Open("postgres", "postgres://zaydek@localhost/codex?sslmode=disable")
+// 	must(err, "sql.Open")
+// 	err = DB.Ping()
+// 	must(err, "DB.Ping")
+// 	defer DB.Close()
+// 	// Parse the schema:
+// 	b, err := ioutil.ReadFile("schema.graphql")
+// 	must(err, "ioutil.ReadFile")
+// 	Schema, err = graphql.ParseSchema(string(b), &RootRx{})
+// 	must(err, "graphql.ParseSchema")
+// 	// Listen and serve:
+// 	http.HandleFunc("/graphql", handleGraphQL)
+// 	// http.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
+// 	// 	w.WriteHeader(http.StatusOK)
+// 	// 	return
+// 	// })
+// 	err = http.ListenAndServe(":8000", nil)
+// 	must(err, "http.ListenAndServe")
+// }
