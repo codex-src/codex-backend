@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"time"
 
 	graphql "github.com/graph-gophers/graphql-go"
@@ -63,4 +64,8 @@ func (r *UserResolver) Username() *string {
 	// 	return nil
 	// }
 	return r.user.Username
+}
+
+func (r *UserResolver) Notes(ctx context.Context, args struct{ Limit, Offset *int32 }) ([]NoteResolver, error) {
+	return RootRx.Notes(ctx, args)
 }

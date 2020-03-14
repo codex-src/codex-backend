@@ -4,12 +4,12 @@ import (
 	"context"
 )
 
-func (r *RootResolver) Notes(ctx context.Context, args struct{ Limit, Offset *int32 }) ([]*NoteResolver, error) {
+func (r *RootResolver) Notes(ctx context.Context, args struct{ Limit, Offset *int32 }) ([]NoteResolver, error) {
 	userID, ok := ctx.Value(UserIDKey).(string)
 	if !ok {
 		return nil, ErrUserMustBeAuth
 	}
-	var rxs []*NoteResolver
+	var rxs []NoteResolver
 	rows, err := db.Query(`
 		select
 			user_id,
@@ -28,12 +28,12 @@ func (r *RootResolver) Notes(ctx context.Context, args struct{ Limit, Offset *in
 	}
 	defer rows.Close()
 	for rows.Next() {
-		note := &Note{}
+		note := Note{}
 		err := rows.Scan(&note.UserID, &note.NoteID, &note.CreatedAt, &note.UpdatedAt, &note.Data)
 		if err != nil {
 			return nil, err
 		}
-		rxs = append(rxs, &NoteResolver{note})
+		rxs = append(rxs, NoteResolver{&note})
 	}
 	err = rows.Err()
 	if err != nil {
