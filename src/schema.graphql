@@ -1,0 +1,35 @@
+schema {
+	query: Query
+	mutation: Mutation
+}
+
+type Query {
+	# Pings the backend; pong!
+	ping: String!
+}
+
+type Mutation {
+	# Registers a new user
+	registerUser(user: RegisterUserInput!): User!
+}
+
+input RegisterUserInput {
+  userID:        ID!
+  email:         String!
+  emailVerified: Boolean!
+  authProvider:  String!
+  photoURL:      String
+  displayName:   String
+}
+
+type User {
+  userID:        ID!
+  createdAt:     String!
+  updatedAt:     String!
+  email:         String!
+  emailVerified: Boolean!
+  authProvider:  String!
+  photoURL:      String
+  displayName:   String
+  username:      String
+}
