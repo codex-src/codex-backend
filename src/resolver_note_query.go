@@ -1,6 +1,8 @@
 package main
 
-import "context"
+import (
+	"context"
+)
 
 type NotesArgs struct {
 	Limit     *int32
@@ -24,8 +26,8 @@ func (r *RootResolver) Notes(ctx context.Context, args NotesArgs) ([]*NoteResolv
 		from notes
 		where user_id = $1
 		order by
-			case when $4 = 'desc' then updated_at end desc,
-			case when $4 = 'asc'  then updated_at end asc
+			case when $4::text is null or $4 = 'desc' then updated_at end desc,
+			case when $4 =  'asc' then updated_at end asc
 		limit coalesce( $2, 25 )
 		offset $3
 	`, userID, args.Limit, args.Offset, args.Direction)
