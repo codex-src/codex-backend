@@ -6,10 +6,12 @@ schema {
 type Query {
 	# Pings the backend; pong!
 	ping: String!
+  # Queries the current user (based on authorization bearer).
+  me: User!
 }
 
 type Mutation {
-	# Registers a new user
+	# Registers a new user.
 	registerUser(user: RegisterUserInput!): User!
 }
 
@@ -18,8 +20,8 @@ input RegisterUserInput {
   email:         String!
   emailVerified: Boolean!
   authProvider:  String!
-  photoURL:      String
-  displayName:   String
+  photoURL:      String # TODO: Nullable?
+  displayName:   String # TODO: Nullable?
 }
 
 type User {
@@ -29,7 +31,24 @@ type User {
   email:         String!
   emailVerified: Boolean!
   authProvider:  String!
-  photoURL:      String
-  displayName:   String
-  username:      String
+  photoURL:      String # TODO: Nullable?
+  displayName:   String # TODO: Nullable?
+  username:      String # TODO: Nullable?
+
+  notes(limit: Int, offset: Int): [Note!]!
+}
+
+# input NoteInput {
+#   # TODO
+# }
+
+type Note {
+  userID:        ID!
+  noteID:        ID!
+  createdAt:     String!
+  updatedAt:     String!
+  data:          String!
+  # dataShort:     String!
+  # dataMedium:    String!
+  # dataLong:      String!
 }
