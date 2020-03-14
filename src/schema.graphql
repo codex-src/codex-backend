@@ -35,7 +35,7 @@ type User {
   displayName:   String # TODO: Nullable?
   username:      String # TODO: Nullable?
 
-  notes(limit: Int, offset: Int): [Note!]!
+  notes(limit: Int, offset: Int, direction: String): [Note!]!
 }
 
 # input NoteInput {
@@ -48,7 +48,4 @@ type Note {
   createdAt:     String!
   updatedAt:     String!
   data:          String!
-  # dataShort:     String!
-  # dataMedium:    String!
-  # dataLong:      String!
 }

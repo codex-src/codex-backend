@@ -47,7 +47,6 @@ type UserID string
 const UserIDKey = UserID("userID")
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	log.Print("responding to a request")
 	// CORS:
 	enableCORS(w)
 	if r.Method == "OPTIONS" {

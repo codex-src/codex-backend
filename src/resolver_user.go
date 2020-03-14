@@ -66,6 +66,6 @@ func (r *UserResolver) Username() *string {
 	return r.user.Username
 }
 
-func (r *UserResolver) Notes(ctx context.Context, args struct{ Limit, Offset *int32 }) ([]NoteResolver, error) {
+func (r *UserResolver) Notes(ctx context.Context, args NotesArgs) ([]*NoteResolver, error) {
 	return RootRx.Notes(ctx, args)
 }
