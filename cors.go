@@ -5,7 +5,9 @@ import (
 	"strings"
 )
 
-const PUBLIC_URL = "http://localhost:3000"
+// const PUBLIC_URL = "http://localhost:3000"
+// const PUBLIC_URL = "https://codex-ef322.web.app"
+const PUBLIC_URL = "https://opencodex.dev"
 
 var Methods = []string{
 	"GET",
