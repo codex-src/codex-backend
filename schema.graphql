@@ -29,16 +29,6 @@ type Mutation {
   deleteNote(noteID: ID!): Boolean
 }
 
-# Used for registering a new user.
-input RegisterUserInput {
-  userID:        ID!
-  email:         String!
-  emailVerified: Boolean!
-  authProvider:  String!
-  photoURL:      String # TODO: Nullable?
-  displayName:   String # TODO: Nullable?
-}
-
 type User {
   userID:        ID!
   createdAt:     String!
@@ -50,13 +40,8 @@ type User {
   displayName:   String # TODO: Nullable?
   username:      String # TODO: Nullable?
 
+  # Connections:
   notes(limit: Int, offset: Int, direction: String): [Note!]!
-}
-
-# Used for creating a new note and updating a note.
-input NoteInput {
-  noteID:        ID!
-  data:          String!
 }
 
 type Note {
@@ -66,5 +51,22 @@ type Note {
   updatedAt:     String!
   data:          String!
 
-  user(): User! # () needed?
+  # Connections:
+  user: User!
+}
+
+# Used for registering a new user.
+input RegisterUserInput {
+  userID:        ID!
+  email:         String!
+  emailVerified: Boolean!
+  authProvider:  String!
+  photoURL:      String # TODO: Nullable?
+  displayName:   String # TODO: Nullable?
+}
+
+# Used for creating a new note and updating a note.
+input NoteInput {
+  noteID:        ID!
+  data:          String!
 }

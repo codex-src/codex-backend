@@ -105,7 +105,7 @@ func main() {
 		password=%s
 		dbname=codex
 		sslmode=disable
-	`, os.Getenv("CLOUD_SQL_PASSWORD")))
+	`, os.Getenv("PSQL_PW")))
 	must(err, "crash due to sql.Open")
 	var testStr string
 	err = db.QueryRow(`select 'hello, world!'`).Scan(&testStr)
@@ -114,8 +114,8 @@ func main() {
 	/*
 	 * Firebase
 	 */
-	log.Print("setting up auth server")
-	opt := option.WithCredentialsFile(".secret/firebase-admin-sdk.json")
+	log.Print("setting up firebase auth")
+	opt := option.WithCredentialsFile("secret/firebase-admin-sdk.json")
 	app, err = firebase.NewApp(context.TODO(), nil, opt)
 	must(err, "crash due to firebase.NewApp")
 	client, err = app.Auth(context.TODO())
@@ -124,14 +124,14 @@ func main() {
 	 * GraphQL
 	 */
 	log.Print("setting up schema")
-	bstr, err := ioutil.ReadFile("src/schema.graphql")
+	bstr, err := ioutil.ReadFile("schema.graphql")
 	must(err, "crash due to ioutil.ReadFile")
 	schema, err = graphql.ParseSchema(string(bstr), &RootResolver{})
 	must(err, "crash due to graphql.ParseSchema")
 	/*
 	 * Web server
 	 */
-	log.Print("setting up server")
+	log.Print("setting up web server")
 	log.Print("ready")
 	port := os.Getenv("PORT")
 	if port == "" {
