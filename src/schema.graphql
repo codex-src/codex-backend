@@ -6,8 +6,13 @@ schema {
 type Query {
 	# Pings the backend; pong!
 	ping: String!
+
   # Queries the current user (based on authorization bearer).
   me: User!
+
+  # Queries a note.
+  user(userID: ID!): User!
+
   # Queries a note.
   note(noteID: ID!): Note!
 }
@@ -24,6 +29,7 @@ type Mutation {
   deleteNote(noteID: ID!): Boolean
 }
 
+# Used for registering a new user.
 input RegisterUserInput {
   userID:        ID!
   email:         String!
@@ -47,6 +53,7 @@ type User {
   notes(limit: Int, offset: Int, direction: String): [Note!]!
 }
 
+# Used for creating a new note and updating a note.
 input NoteInput {
   noteID:        ID!
   data:          String!
@@ -58,4 +65,6 @@ type Note {
   createdAt:     String!
   updatedAt:     String!
   data:          String!
+
+  user(): User! # () needed?
 }

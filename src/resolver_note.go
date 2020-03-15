@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"time"
 
 	graphql "github.com/graph-gophers/graphql-go"
@@ -47,3 +48,8 @@ func (r *NoteResolver) Data() string {
 // func (r *NoteResolver) DataLong() string {
 // 	return fmt.Sprintf("%0.*s", 1e3, r.note.Data)
 // }
+
+func (r *NoteResolver) User(ctx context.Context) (*UserResolver, error) {
+	userArgs := struct{ UserID graphql.ID }{r.note.UserID}
+	return RootRx.User(ctx, userArgs)
+}

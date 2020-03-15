@@ -46,23 +46,14 @@ func (r *UserResolver) AuthProvider() string {
 }
 
 func (r *UserResolver) PhotoURL() *string {
-	// if r.user.PhotoURL == nil {
-	// 	return nil
-	// }
 	return r.user.PhotoURL
 }
 
 func (r *UserResolver) DisplayName() *string {
-	// if r.user.DisplayName == nil {
-	// 	return nil
-	// }
 	return r.user.DisplayName
 }
 
 func (r *UserResolver) Username() *string {
-	// if r.user.Username == nil {
-	// 	return nil
-	// }
 	return r.user.Username
 }
 
