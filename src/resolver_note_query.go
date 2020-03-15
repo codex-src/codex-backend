@@ -49,30 +49,3 @@ func (r *RootResolver) Notes(ctx context.Context, args NotesArgs) ([]*NoteResolv
 	}
 	return rxs, nil
 }
-
-// func (r *RootResolver) Note(ctx context.Context, args struct{ NoteID graphql.ID }) (*NoteResolver, error) {
-// 	currUser := CurrentSessionFromContext(ctx)
-// 	if !currUser.IsAuth() {
-// 		return nil, ErrUserMustBeAuth
-// 	}
-// 	note := &Note{}
-// 	err := DB.QueryRow(`
-// 		select
-// 			user_id,
-// 			note_id,
-// 			created_at,
-// 			updated_at,
-// 			title_utf8_count,
-// 			title,
-// 			data_utf8_count,
-// 			data
-// 		from notes
-// 		where
-// 			note_id = $1 and
-// 			( select user_id = $2 from notes where note_id = $3 )
-// 	`, args.NoteID, currUser.UserID, args.NoteID).Scan(&note.UserID, &note.NoteID, &note.CreatedAt, &note.UpdatedAt, &note.TitleUTF8Count, &note.Title, &note.DataUTF8Count, &note.Data)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	return &NoteResolver{note}, nil
-// }

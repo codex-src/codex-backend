@@ -16,8 +16,7 @@ type RegisterUserInput struct {
 	DisplayName   *string
 }
 
-func (r *RootResolver) RegisterUser(ctx context.Context, args struct{ User RegisterUserInput }) (*UserResolver, error) {
-	log.Printf("registering user userID=%s", args.User.UserID)
+func (r *RootResolver) RegisterUser(ctx context.Context, args struct{ UserInput RegisterUserInput }) (*UserResolver, error) {
 	tx, err := db.Begin()
 	if err != nil {
 		return nil, err
@@ -32,7 +31,7 @@ func (r *RootResolver) RegisterUser(ctx context.Context, args struct{ User Regis
 			photo_url,
 			display_name
 		) values ( $1, $2, $3, $4, $5, $6 )
-	`, args.User.UserID, args.User.Email, args.User.EmailVerified, args.User.AuthProvider, args.User.PhotoURL, args.User.DisplayName)
+	`, args.UserInput.UserID, args.UserInput.Email, args.UserInput.EmailVerified, args.UserInput.AuthProvider, args.UserInput.PhotoURL, args.UserInput.DisplayName)
 	if err != nil {
 		return nil, err
 	}
@@ -40,6 +39,6 @@ func (r *RootResolver) RegisterUser(ctx context.Context, args struct{ User Regis
 	if err != nil {
 		return nil, err
 	}
-	log.Printf("registered user userID=%s", args.User.UserID)
+	log.Printf("registered user userID=%s", args.UserInput.UserID)
 	return RootRx.Me(ctx)
 }

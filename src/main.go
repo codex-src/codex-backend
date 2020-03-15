@@ -54,16 +54,22 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// Check auth:
-	idToken := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
-	token, err := client.VerifyIDToken(context.TODO(), idToken)
-	if err != nil {
-		log.Print(fmt.Errorf("error due to client.VerifyUserID: %w", err))
-		RespondUnauthorized(w)
-		return
+	//
+	// TODO: Extract to hasAuth
+	userID := ""
+	if r.Header.Get("Authorization") != "" {
+		idToken := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
+		token, err := client.VerifyIDToken(context.TODO(), idToken)
+		if err != nil {
+			log.Print(fmt.Errorf("error due to client.VerifyUserID: %w", err))
+			RespondUnauthorized(w)
+			return
+		}
+		userID = token.UID
 	}
 	// Parse query:
 	var query Query // query := Query{UserID: token.UID}
-	err = json.NewDecoder(r.Body).Decode(&query)
+	err := json.NewDecoder(r.Body).Decode(&query)
 	if err != nil {
 		log.Print(fmt.Errorf("error due to json.NewDecoder.Decode: %w", err))
 		RespondServerError(w)
@@ -71,7 +77,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	}
 	// Execute query and respond:
 	ctx := context.TODO()
-	ctx = context.WithValue(ctx, UserIDKey, token.UID)
+	ctx = context.WithValue(ctx, UserIDKey, userID)
 	res := schema.Exec(ctx, query.Query, "", query.Variables)
 	if res.Errors != nil {
 		log.Printf("res.Errors=%+v", res.Errors)

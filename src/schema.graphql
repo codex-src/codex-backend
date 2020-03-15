@@ -8,11 +8,18 @@ type Query {
 	ping: String!
   # Queries the current user (based on authorization bearer).
   me: User!
+  # Queries a note.
+  note(noteID: ID!): Note!
 }
 
 type Mutation {
 	# Registers a new user.
-	registerUser(user: RegisterUserInput!): User!
+	registerUser(userInput: RegisterUserInput!): User!
+
+  # Creates a new note.
+  createNote(noteInput: NoteInput!): Boolean
+  # Deletes a note.
+  deleteNote(noteID: ID!): Boolean
 }
 
 input RegisterUserInput {
@@ -38,9 +45,10 @@ type User {
   notes(limit: Int, offset: Int, direction: String): [Note!]!
 }
 
-# input NoteInput {
-#   # TODO
-# }
+input NoteInput {
+  noteID:        ID!
+  data:          String!
+}
 
 type Note {
   userID:        ID!
