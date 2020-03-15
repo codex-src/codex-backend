@@ -39,6 +39,33 @@ func (r *RootResolver) CreateNote(ctx context.Context, args struct{ NoteInput No
 	return nil, nil
 }
 
+func (r *RootResolver) UpdateNote(ctx context.Context, args struct{ NoteInput NoteInput }) (*bool, error) {
+	userID, ok := ctx.Value(UserIDKey).(string)
+	if !ok {
+		return nil, ErrUserMustBeAuth
+	}
+	tx, err := db.Begin()
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+	_, err = tx.Exec(`
+		update notes
+		set data = $3
+		where
+			user_id = $1 and
+			note_id = $2
+	`, userID, args.NoteInput.NoteID, args.NoteInput.Data)
+	if err != nil {
+		return nil, err
+	}
+	err = tx.Commit()
+	if err != nil {
+		return nil, err
+	}
+	return nil, nil
+}
+
 func (r *RootResolver) DeleteNote(ctx context.Context, args struct{ NoteID graphql.ID }) (*bool, error) {
 	userID, ok := ctx.Value(UserIDKey).(string)
 	if !ok {

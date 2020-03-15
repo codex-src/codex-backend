@@ -18,6 +18,8 @@ type Mutation {
 
   # Creates a new note.
   createNote(noteInput: NoteInput!): Boolean
+  # Updates a note.
+  updateNote(noteInput: NoteInput!): Boolean
   # Deletes a note.
   deleteNote(noteID: ID!): Boolean
 }
