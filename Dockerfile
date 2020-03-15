@@ -27,7 +27,8 @@ RUN apk add --no-cache ca-certificates
 
 # Copy the binary to the production image from the builder stage.
 COPY --from=builder /app/server /server
-COPY .secret .secret
+COPY secret /secret
+COPY schema.graphql /schema.graphql
 
 # Run the web service on container startup.
 CMD ["/server"]
