@@ -1,6 +1,6 @@
 <div align="center">
 	<h1>
-		Codex
+		<img src="https://opencodex.dev/favicon.ico" width="36px" align="center">&nbsp;&nbsp;Codex
 		<br>
 		<br>
 	</h1>
