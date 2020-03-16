@@ -5,10 +5,6 @@ import (
 	"strings"
 )
 
-// const PUBLIC_URL = "http://localhost:3000"
-// const PUBLIC_URL = "https://codex-ef322.web.app"
-const PUBLIC_URL = "https://opencodex.dev"
-
 var Methods = []string{
 	"GET",
 	"OPTIONS",
@@ -26,5 +22,5 @@ func enableCORS(w http.ResponseWriter) {
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	w.Header().Set("Access-Control-Allow-Headers", strings.Join(Headers, ", "))
 	w.Header().Set("Access-Control-Allow-Methods", strings.Join(Methods, ", "))
-	w.Header().Set("Access-Control-Allow-Origin", PUBLIC_URL)
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 }
