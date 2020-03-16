@@ -1,9 +1,6 @@
 package main
 
-import (
-	"context"
-	"fmt"
-)
+import "context"
 
 func (r *RootResolver) Me(ctx context.Context) (*UserResolver, error) {
 	userID, ok := ctx.Value(UserIDKey).(string)
@@ -26,7 +23,7 @@ func (r *RootResolver) Me(ctx context.Context) (*UserResolver, error) {
 		where user_id = $1
 	`, userID).Scan(&user.UserID, &user.CreatedAt, &user.UpdatedAt, &user.Email, &user.EmailVerified, &user.AuthProvider, &user.PhotoURL, &user.DisplayName, &user.Username)
 	if err != nil {
-		return nil, fmt.Errorf("query me: %w", err)
+		return nil, err
 	}
 	return &UserResolver{user}, nil
 }

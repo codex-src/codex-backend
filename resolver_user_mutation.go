@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 
 	graphql "github.com/graph-gophers/graphql-go"
@@ -17,7 +16,7 @@ type RegisterUserInput struct {
 	DisplayName   *string
 }
 
-func (r *RootResolver) RegisterUser(ctx context.Context, args struct{ UserInput RegisterUserInput }) (*UserResolver, error) {
+func (r *RootResolver) RegisterUser(ctx context.Context, args struct{ UserInput RegisterUserInput }) (*bool, error) {
 	tx, err := db.Begin()
 	if err != nil {
 		return nil, err
@@ -34,13 +33,12 @@ func (r *RootResolver) RegisterUser(ctx context.Context, args struct{ UserInput 
 		) values ( $1, $2, $3, $4, $5, $6 )
 	`, args.UserInput.UserID, args.UserInput.Email, args.UserInput.EmailVerified, args.UserInput.AuthProvider, args.UserInput.PhotoURL, args.UserInput.DisplayName)
 	if err != nil {
-		return nil, fmt.Errorf("mutation registerUser: %w", err)
+		return nil, err
 	}
 	err = tx.Commit()
 	if err != nil {
 		return nil, err
 	}
 	log.Printf("registered user userID=%s", args.UserInput.UserID)
-	ctx = context.WithValue(ctx, UserIDKey, args.UserInput.UserID)
-	return RootRx.Me(ctx)
+	return nil, nil
 }

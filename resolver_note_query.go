@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"database/sql"
-	"fmt"
 )
 
 type NotesArgs struct {
@@ -35,7 +34,7 @@ func (r *RootResolver) Notes(ctx context.Context, args NotesArgs) ([]*NoteResolv
 	`, userID, args.Limit, args.Offset, args.Direction)
 	// NOTE: Guard sql.ErrNoRows
 	if err != nil && err != sql.ErrNoRows {
-		return nil, fmt.Errorf("query notes: %w", err)
+		return nil, err
 	}
 	defer rows.Close()
 	for rows.Next() {

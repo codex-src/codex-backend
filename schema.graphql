@@ -19,7 +19,7 @@ type Query {
 
 type Mutation {
 	# Registers a new user.
-	registerUser(userInput: RegisterUserInput!): User!
+	registerUser(userInput: RegisterUserInput!): Boolean
 
   # Creates a new note.
   createNote(noteInput: NoteInput!): Boolean

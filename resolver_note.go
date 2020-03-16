@@ -37,18 +37,6 @@ func (r *NoteResolver) Data() string {
 	return r.note.Data
 }
 
-// func (r *NoteResolver) DataShort() string {
-// 	return fmt.Sprintf("%0.*s", 250, r.note.Data)
-// }
-//
-// func (r *NoteResolver) DataMedium() string {
-// 	return fmt.Sprintf("%0.*s", 500, r.note.Data)
-// }
-//
-// func (r *NoteResolver) DataLong() string {
-// 	return fmt.Sprintf("%0.*s", 1e3, r.note.Data)
-// }
-
 func (r *NoteResolver) User(ctx context.Context) (*UserResolver, error) {
 	userArgs := struct{ UserID graphql.ID }{r.note.UserID}
 	return RootRx.User(ctx, userArgs)
