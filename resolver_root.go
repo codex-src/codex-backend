@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	graphql "github.com/graph-gophers/graphql-go"
 )
@@ -44,7 +45,7 @@ func (r *RootResolver) User(ctx context.Context, args struct{ UserID graphql.ID 
 		where user_id = $1
 	`, args.UserID).Scan(&user.UserID, &user.PhotoURL, &user.DisplayName, &user.Username)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("query user: %w", err)
 	}
 	return &UserResolver{user}, nil
 }
@@ -67,7 +68,7 @@ func (r *RootResolver) Note(ctx context.Context, args struct{ NoteID graphql.ID 
 		where note_id = $1
 	`, args.NoteID).Scan(&note.UserID, &note.NoteID, &note.CreatedAt, &note.UpdatedAt, &note.Data)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("query note: %w", err)
 	}
 	return &NoteResolver{note}, nil
 }

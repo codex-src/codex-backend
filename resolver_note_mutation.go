@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 
 	graphql "github.com/graph-gophers/graphql-go"
@@ -30,7 +31,7 @@ func (r *RootResolver) CreateNote(ctx context.Context, args struct{ NoteInput No
 		) values ( $1, $2, $3 )
 	`, userID, args.NoteInput.NoteID, args.NoteInput.Data)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("mutation createNote: %w", err)
 	}
 	err = tx.Commit()
 	if err != nil {
@@ -57,7 +58,7 @@ func (r *RootResolver) UpdateNote(ctx context.Context, args struct{ NoteInput No
 			note_id = $2
 	`, userID, args.NoteInput.NoteID, args.NoteInput.Data)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("mutation updateNote: %w", err)
 	}
 	err = tx.Commit()
 	if err != nil {
@@ -84,7 +85,7 @@ func (r *RootResolver) DeleteNote(ctx context.Context, args struct{ NoteID graph
 			note_id = $2
 	`, userID, args.NoteID)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("mutation deleteNote: %w", err)
 	}
 	err = tx.Commit()
 	if err != nil {

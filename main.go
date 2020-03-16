@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"regexp"
 	"strings"
 
 	firebase "firebase.google.com/go"
@@ -38,12 +39,12 @@ type UserID string
 
 // Represents a GraphQL query or mutation.
 type Query struct {
-	OperationName string
-	Query         string
-	Variables     map[string]interface{}
+	// FIXME: OperationName is not appearing
+	Query         string                 `json:"query"`
+	OperationName string                 `json:"operationName"`
+	Variables     map[string]interface{} `json:"variables"`
 }
 
-// // Decode query (parse JSON):
 // var query Query
 // err := json.NewDecoder(r.Body).Decode(&query)
 // if err != nil {
@@ -52,9 +53,18 @@ type Query struct {
 // 	return
 // }
 
+// client, err := app.Auth(context.TODO())
+// if err != nil {
+// 	log.Print(fmt.Errorf("error due to app.Auth: %w", err))
+// 	RespondServerError(w)
+// 	return
+// }
+
+var whiteSpaceRe = regexp.MustCompile(`( |\t|\n)+`)
+
 func handler(w http.ResponseWriter, r *http.Request) {
-	// Cross-origin resource sharing (CORS):
-	enableCORS(w)
+	// Set headers:
+	setHeaders(w)
 	if r.Method == "OPTIONS" {
 		w.WriteHeader(http.StatusOK)
 		return
@@ -81,7 +91,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		RespondServerError(w)
 		return
 	}
-	// Decode query (parse JSON):
+	// Decode query:
 	var query Query
 	err = json.Unmarshal(dataIn, &query)
 	if err != nil {
@@ -90,7 +100,8 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// Execute query:
-	log.Print("query: ", string(dataIn))
+	debugQuery := strings.TrimSpace(whiteSpaceRe.ReplaceAllString(query.Query, " "))
+	log.Printf("query=%s variables=%+v", debugQuery, query.Variables)
 	ctx := context.WithValue(context.TODO(), UserIDKey, userID)
 	resp := schema.Exec(ctx, query.Query, query.OperationName, query.Variables)
 	if resp.Errors != nil {

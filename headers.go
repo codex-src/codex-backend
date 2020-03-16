@@ -18,7 +18,7 @@ var Headers = []string{
 	"X-Requested-With",
 }
 
-func enableCORS(w http.ResponseWriter) {
+func setHeaders(w http.ResponseWriter) {
 	w.Header().Set("Access-Control-Allow-Headers", strings.Join(Headers, ", "))
 	w.Header().Set("Access-Control-Allow-Methods", strings.Join(Methods, ", "))
 	w.Header().Set("Access-Control-Allow-Origin", "*")
